@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/css" href="../additional_files/css/pgmain.min.css"?>
+<?xml-stylesheet type="text/css" href="../additional_files/css/sh_typical.min.css"?>
+
+<template>
+<title>最大公约数 (gcd)</title>
+<pre class="sh_sourceCode"><code class="sh_cpp">int gcd(int x, int y)
+{
+    return !y ? x : gcd(y, x % y);
+}</code></pre>
+</template>
