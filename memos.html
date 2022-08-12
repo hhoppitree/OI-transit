@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/fonts.css" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/sh_typical.min.css" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/pgmain.min.css" />
+		<title>OI 中转站 - 便笺</title>
+		<script src="additional_files/js/jquery.min.js"></script>
+		<script src="additional_files/js/basic.min.js"></script>
+		<script src="additional_files/js/file.min.js"></script>
+		<script src="additional_files/js/sort.min.js"></script>
+		<script>
+			jQuery(document).ready($ => {
+				initPage();
+
+				let params = parseStr(location.search);
+				curPage = parseInt(params['page'] || '1');
+				$.get('memos/tot.cfg', parseMemos);
+			});
+		</script>
+	</head>
+	<body>
+		<div class="title">
+			<div class="opacity-3 flex" style="height: 160px">
+				<div style="width: 100%">
+					<h2 class="cen">OI 中转站 - 便笺</h2>
+					<p class="cen" id="dispTime">当前时间: 2020-7-31 12:00:00</p>
+					<p class="ri" id="motto" style="opacity: 0; margin-top: -20px">permutations are the unordered labeled set of cycles.</p>
+				</div>
+			</div>
+		</div>
+		<div class="dmarquee" style="height: 25px">
+			<div class="button-transparent" id="ctrl-marquee" style="float: left">
+				<p class="hint">开启字幕</p>
+			</div>
+			<div class="button-transparent" id="ctrl-export" style="float: right">
+				<p class="hint">导出表格</p>
+			</div>
+			<div style="overflow: hidden">
+				<marquee id="intro" scrollamount="1000" style="color: #999; display: none">bestFy is the cutest !</marquee>
+			</div>
+		</div>
+		<div class="main">
+			<div class="opacity-4 padding" style="min-height: 1344px">
+				<div class="cen big-button">
+					<button onclick="location.href='index.html'">做题记录</button><button onclick="location.href='tools.html'">小工具</button><button onclick="location.href='templates.html'">模板</button><button>便笺</button>
+				</div>
+				<fieldset>
+					<legend>便笺</legend>
+					<table class="cen main-table" id="memTable" style="width: 100%">
+						<thead>
+							<tr>
+								<th style="width: 10%">便笺编号</th>
+								<th style="width: 30%">便笺名称</th>
+								<th style="width: 10%">链接</th>
+								<th style="width: 20%">最后更新时间</th>
+								<th style="width: 30%">备注</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+					<p class="cen" id="memTotal">请稍等，写个酱油记就加载完毕啦！</p>
+					<div class="cen"><ul id="pagination"></ul></div>
+				</fieldset>
+			</div>
+		</div>
+	</body>
+</html>

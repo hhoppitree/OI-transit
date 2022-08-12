@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/fonts.css" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/sh_typical.min.css" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/pgmain.min.css" />
+		<title>OI 中转站 - 做题记录</title>
+		<script src="additional_files/js/jquery.min.js"></script>
+		<script src="additional_files/js/basic.min.js"></script>
+		<script src="additional_files/js/file.min.js"></script>
+		<script src="additional_files/js/sort.min.js"></script>
+		<script src="additional_files/js/inflate.min.js"></script>
+		<script src="additional_files/js/tag_redirector.min.js"></script>
+		<script>
+			jQuery(document).ready($ => {
+				initPage();
+
+				let params = parseStr(location.search), strLocation, curTag, curSearch, r;
+
+				if (params['redirect']) {
+					$.ajax('records/tot.cfg', {
+						type : 'GET',
+						id : params['redirect'],
+						success : fastRedirect
+					});
+					throw 'script error !';
+				}
+
+				curLocation = params['curLoc'] || '';
+				curROrder = getStorage('srtRec') || 'n';
+				curPage = parseInt(params['page'] || '1');
+				curTag = params['tag'] || '';
+				curSearch = params['search'] || '';
+				if (!curTag.match(/^[^\x00-\x1f;]+$/)) curTag = '';
+				if (!curSearch.match(/^[^\x00-\x1f]+$/)) curSearch = '';
+
+				if (r = redirectTag(curTag)) {
+					params['tag'] = r;
+					params['from'] = curTag;
+					location.replace(getUri(params));
+				}
+
+				strLocation = '当前位置: <a href="' + getUri({}) + '">根</a>';
+
+				if (curLocation) {
+					strLocation += ' &gt; <a href="' + getUri({curLoc : curLocation}) + '">' + htmlspecialchars(getDisplay(curLocation)) + '</a>';
+				}
+
+				if (curTag) {
+					strLocation += ' &gt; <a href="' + getUri({curLoc : curLocation, tag : curTag}) + '">' + htmlspecialchars(curTag) + '</a>';
+					setFileConfig('tag', curTag);
+				}
+
+				if (curSearch) {
+					setFileConfig('search', curSearch);
+				}
+
+				if (params['from']) {
+					strLocation += '<br /><small style="color: #090; padding-left: 8em">(重定向自 <strong style="color: #09f">' + htmlspecialchars(params['from']) +'</strong>)</small>';
+				}
+
+				$('#pLocation').html(strLocation);
+				$('#search').val(curSearch);
+				$.get('records/tot.cfg', parseRecords);
+
+				$('#locations>button').click(function () {
+					location.href = getUri({'curLoc' : $(this).data('location')});
+				});
+
+				$('.sortlink').click(function () {
+					let t = $(this.parentNode).index(), s;
+					if (t !== 2) {
+						s = getSortChar(t);
+						$('#recTable > tbody').empty();
+						if (s === curROrder) curROrder += 'r';
+						else if (s + 'r' === curROrder) curROrder = s;
+						else curROrder = s; sortTable(curROrder);
+						$('#recTable').append(Rows.slice((curPage - 1) * RECORDS_PER_PAGE, curPage * RECORDS_PER_PAGE));
+						setStorage('srtRec', curROrder);
+					}
+				});
+
+				$('#search').keypress(function (e) {
+					if (e.keyCode === 13 || e.which === 13) {
+						params['page'] = '';
+						params['from'] = '';
+						e.shiftKey ? params['tag'] = this.value : (params['search'] = this.value);
+						location.href = getUri(params);
+					}
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div class="title">
+			<div class="opacity-3 flex" style="height: 160px">
+				<div style="width: 100%">
+					<h2 class="cen">OI 中转站 - 做题记录</h2>
+					<p class="cen" id="dispTime">当前时间: 2020-7-31 12:00:00</p>
+					<p class="ri" id="motto" style="opacity: 0; margin-top: -20px">stably, continuously, periodically.</p>
+				</div>
+			</div>
+		</div>
+		<div class="dmarquee" style="height: 25px">
+			<div class="button-transparent" id="ctrl-marquee" style="float: left">
+				<p class="hint">开启字幕</p>
+			</div>
+			<div class="button-transparent" id="ctrl-export" style="float: right">
+				<p class="hint">导出表格</p>
+			</div>
+			<div style="overflow: hidden">
+				<marquee id="intro" scrollamount="1000" style="color: #999; display: none">bestFy is the cutest !</marquee>
+			</div>
+		</div>
+		<div class="main">
+			<div class="opacity-4 padding" style="min-height: 1344px">
+				<div class="cen big-button">
+					<button>做题记录</button><button onclick="location.href='tools.html'">小工具</button><button onclick="location.href='templates.html'">模板</button><button onclick="location.href='memos.html'">便笺</button>
+				</div>
+				<fieldset>
+					<legend>做题记录</legend>
+					<div class="buffer-1" id="locations"><button data-location="">全部</button><button data-location="Lydsy" >Lydsy</button><button data-location="Luogu">洛谷</button><button data-location="Vijos">Vijos</button><button data-location="HDU">HDU</button><button data-location="POJ">POJ</button><button data-location="UOJ">UOJ</button><button data-location="LibreOJ">LibreOJ</button><button data-location="SOJ">SimpleOJ/StupidOJ</button><button data-location="Codeforces">Codeforces</button><button data-location="Codechef">Codechef</button><button data-location="AtCoder">AtCoder</button><button data-location="SPOJ">SPOJ</button><button data-location="Local">本地</button><button data-location="Unknown">其它 OJ</button></div>
+					<div class="buffer-1 row">
+						<div class="col-1-2" id="pLocation">当前位置: </div>
+						<div class="col-1-4 col-push-1-4 ri"><input type="text" id="search" placeholder="搜索 (如需搜索标签请按 Shift + Enter)" /></div>
+					</div>
+					<table class="cen main-table" id="recTable" style="width: 100%">
+						<thead>
+							<tr>
+								<th style="width: 8%"><span class="sortlink">记录编号</span></th>
+								<th style="width: 19%"><span class="sortlink">题目编号</span></th>
+								<th style="width: 11%">题解/代码链接</th>
+								<th style="width: 18%"><span class="sortlink">AC 时间</span></th>
+								<th style="width: 8%"><span class="sortlink">算法难度</span></th>
+								<th style="width: 8%"><span class="sortlink">代码难度</span></th>
+								<th style="width: 28%"><span class="sortlink">主要算法</span></th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+					<p class="cen" id="recTotal">请稍等，写个 FFT 就加载完毕啦！</p>
+					<div class="cen"><ul id="pagination"></ul></div>
+				</fieldset>
+			</div>
+		</div>
+	</body>
+</html>

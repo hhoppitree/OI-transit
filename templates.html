@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/fonts.css" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/sh_typical.min.css" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/pgmain.min.css" />
+		<title>OI 中转站 - 模板</title>
+		<script src="additional_files/js/jquery.min.js"></script>
+		<script src="additional_files/js/basic.min.js"></script>
+		<script src="additional_files/js/file.min.js"></script>
+		<script src="additional_files/js/sort.min.js"></script>
+		<script>
+			jQuery(document).ready($ => {
+				initPage();
+
+				$.get('templates/tot.cfg', getTemplates);
+
+				// big list change
+				$('#tclass').click(function () {
+					let t = $('#sclass').empty().append($('<option />').val('unsel').html('选择模板'));
+					tmpArr.filter(x => x.startsWith(this.value)).forEach(x => t.append($('<option />').val(x).html(titleT[x])));
+				});
+
+				// thin list change
+				$('#sclass').click(function () {if (this.value !== 'unsel') location.href = '#' + this.value;});
+
+				let going = -1;
+				// scrolling
+				$(window).scroll(function () {
+					let $top = $('#back-to-top');
+					if ($(window).scrollTop() >= 1000)
+						$top.slideDown('slow');
+					else {
+						if (going === -1)
+							$top.slideUp('slow');
+						else if (!$top.is(':hidden') && $top.queue().length === 0)
+							$top.animate({'opacity': 'hide', 'bottom': '75%'}, 'slow', function () {$top.css('bottom', '');});
+					}
+				});
+
+				// go to Top
+				function gotoTop() {
+					let pos = $(window).scrollTop(), newPos;
+					if (pos > 0) {
+						newPos = (pos > 800 ? parseInt(pos * 0.75) : Math.max(pos - 200, 0));
+						$(window).scrollTop(newPos);
+						going = (newPos > 0 ? setTimeout(gotoTop, 25) : -1);
+					}
+				}
+
+				$('#back-to-top').click(gotoTop);
+			});
+		</script>
+	</head>
+	<body>
+		<div class="title">
+			<div class="opacity-3 flex" style="height: 160px">
+				<div style="width: 100%">
+					<h2 class="cen">OI 中转站 - 模板</h2>
+					<p class="cen" id="dispTime">当前时间: 2020-7-31 12:00:00</p>
+					<p class="ri" id="motto" style="opacity: 0; margin-top: -20px">to dissolve or to precipitate, it is a question.</p>
+				</div>
+			</div>
+		</div>
+		<div class="dmarquee" style="height: 25px">
+			<div class="button-transparent" id="ctrl-marquee" style="float: left">
+				<p class="hint">开启字幕</p>
+			</div>
+			<div class="button-transparent" id="ctrl-export" style="float: right">
+				<p class="hint">导出表格</p>
+			</div>
+			<div style="overflow: hidden">
+				<marquee id="intro" scrollamount="1000" style="color: #999; display: none">bestFy is the cutest !</marquee>
+			</div>
+		</div>
+		<div class="main">
+			<div class="opacity-4 padding" style="min-height: 1344px">
+				<div class="cen big-button">
+					<button onclick="location.href='index.html'">做题记录</button><button onclick="location.href='tools.html'">小工具</button><button>模板</button><button onclick="location.href='memos.html'">便笺</button>
+				</div>
+				<fieldset>
+					<legend>模板</legend>
+					<div id="templates">
+						<div class="cen">
+							<span>分类：</span>
+							<select class="selbox" id="tclass">
+								<option value="unsel">选择分类</option>
+								<option value="nt">数论(nt)</option>
+								<option value="str">字符串(str)</option>
+								<option value="tr">树(tr)</option>
+								<option value="gr">图(gr)</option>
+								<option value="ds">数据结构(ds)</option>
+								<option value="ed">常用(ed)</option>
+								<option value="cg">计算几何(cg)</option>
+							</select>
+							<span>&emsp;&emsp;具体：</span>
+							<select class="selbox" id="sclass">
+								<option value="unsel">选择模板</option>
+							</select>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+		<div id="back-to-top" style="display: none">
+			<img src="additional_files/img/rocket.png" alt="fy 的小火箭" style="width: 100%" />
+			<p class="hint">fy 的小火箭</p>
+		</div>
+	</body>
+</html>

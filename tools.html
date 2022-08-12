@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/fonts.css" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/sh_typical.min.css" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/pgmain.min.css" />
+		<link type="text/css" rel="stylesheet" href="additional_files/css/rating.min.css" />
+		<title>OI 中转站 - 小工具</title>
+		<script src="additional_files/js/jquery.min.js"></script>
+		<script src="additional_files/js/basic.min.js"></script>
+		<script src="additional_files/js/file.min.js"></script>
+		<script src="additional_files/js/sort.min.js"></script>
+		<script>
+			jQuery(document).ready($ => {
+				initPage();
+
+				if (window.BigInt) { // bigint is available
+					let B = window.BigInt;
+
+					function PowerMod(a, n, m) {
+						let c = B(1);
+						for (a %= m; n; n >>= B(1), a = a * a % m)
+							if (n & B(1)) c = c * a % m;
+						return c % m;
+					}
+
+					function tr(s, name) {
+						if (s === '') return name + ' is not a valid integer';
+						try {
+							return B(s);
+						} catch (e) {
+							return name + ' is not a valid integer';
+						}
+					}
+
+					window.pow = function(a, n, m) {
+						if (a = tr(a, 'a'), typeof a !== 'bigint') return a;
+						if (n = tr(n, 'n'), typeof n !== 'bigint') return n;
+						if (n < 0) return 'n is negative';
+						if (m = tr(m, 'm'), typeof m !== 'bigint') return m;
+						if (m <= 0) return 'm is not positive';
+						return PowerMod(a % m + m, n, m);
+					}
+
+					function Miller_Rabin(n) {
+						let c = B(0), j, s = n - B(1), u, v;
+						for (; !(s & B(1)); ++c, s >>= B(1));
+						for (let p of [2, 3, 5, 7, 11, 13, 82, 373].map(B)) {
+							if (!(n % p)) return false;
+							u = PowerMod(p, s, n);
+							for (j = B(0); j < c; ++j, u = v)
+								if (v = u * u % n, u != 1 && u !== n - B(1) && v == 1) return false;
+							if (u != 1) return false;
+						}
+						return true;
+					}
+
+					window.isp = function(n) {
+						if (n = tr(n, 'n'), typeof n !== 'bigint') return n;
+						if (n < 2 || n >= B(1) << B(64)) return "n is not in range [2, 2^64)";
+						return n < 32 || n == 41 || n == 373 ? !(B(1601558355) >> n & B(1)) : Miller_Rabin(n);
+					}
+
+					$('#status-power-mod').html('您的浏览器<strong style="color: #09f">滋磁</strong> <code>BigInt</code>，可以完成任意精度的计算。');
+					$('#status-primality-test').html('您的浏览器<strong style="color: #09f">滋磁</strong> <code>BigInt</code>，可以完成 2<sup>64</sup> 内素数的判定。');
+				} else {
+					function MulMod(a, b, m) {
+						let ah = a >> 16, al = a & 0xffff, bh = b >> 16, bl = b & 0xffff;
+						let H = ah * bh % m, M = (ah * bl + al * bh) % m, L = al * bl % m;
+						return ((H * 0x10000 % m + M) * 0x10000 % m + L) % m;
+					}
+
+					function PowerMod(a, n, m) {
+						let c = 1;
+						for (a %= m; n; n >>= 1, a = MulMod(a, a, m))
+							if (n & 1) c = MulMod(c, a, m);
+						return c % m;
+					}
+
+					window.pow = function(a, n, m) {
+						if (!$.isNumeric(a)) return 'a is not a valid integer';
+						if (a = parseFloat(a), Math.floor(a) !== a) return 'a is not a valid integer';
+						if (a < 0 || a > 0x7fffffff) return 'a is not in range [0, 2^31)';
+						if (!$.isNumeric(n)) return 'n is not a valid integer';
+						if (n = parseFloat(n), Math.floor(n) !== n) return 'n is not a valid integer';
+						if (n < 0 || n > 0x7fffffff) return 'n is not in range [0, 2^31)';
+						if (!$.isNumeric(m)) return 'm is not a valid integer';
+						if (m = parseFloat(m), Math.floor(m) !== m) return 'm is not a valid integer';
+						if (m < 1 || m > 0x7fffffff) return 'm is not in range [1, 2^31)';
+						return PowerMod(a, n, m);
+					}
+
+					function Miller_Rabin(n) {
+						let c = 0, j, s = n - 1, u, v;
+						for (; !(s & 1); ++c, s >>= 1);
+						for (let p of [2, 7, 61]) {
+							if (!(n % p)) return false;
+							u = PowerMod(p, s, n);
+							for (j = 0; j < c; ++j, u = v)
+								if (v = MulMod(u, u, n), u !== 1 && u !== n - 1 && v === 1) return false;
+							if (u !== 1) return false;
+						}
+						return true;
+					}
+
+					window.isp = function(n) {
+						if (!$.isNumeric(n)) return 'n is not a valid integer';
+						if (n = parseFloat(n), Math.floor(n) !== n) return 'n is not a valid integer';
+						if (n < 2 || n > 0x7fffffff) return 'n is not in range [2, 2^31)';
+						return n < 32 || n === 61 ? !(1601558355 >> n & 1) : Miller_Rabin(n);
+					}
+
+					$('#status-power-mod').html('您的浏览器<strong style="color: #630">不滋磁</strong> <code>BigInt</code>，只能完成 2<sup>31</sup> 内整数的计算。');
+					$('#status-primality-test').html('您的浏览器<strong style="color: #630">不滋磁</strong> <code>BigInt</code>，只能完成 2<sup>31</sup> 内素数的判定。');
+				}
+
+				$('#calc-power-mod').click(function () {
+					let a = $('#div-power-mod input[name="a"]').val();
+					let n = $('#div-power-mod input[name="n"]').val();
+					let m = $('#div-power-mod input[name="m"]').val();
+					$('#div-power-mod input[name="result"]').val(pow(a, n, m).toString());
+				});
+
+				$('#calc-primality-test').click(function () {
+					let n = $('#div-primality-test input[name="n"]').val();
+					$('#div-primality-test input[name="result"]').val(isp(n).toString());
+				});
+
+				$('.sortlink').click(function () {
+					sortTable('R' + getSortChar2($(this.parentNode).index()));
+					$('#rankTable>tbody').empty().append(Rows);
+				});
+
+				// ---------------- marquee ---------------- //
+				const marquee_on = () => {
+					$('#status-marquee').html('on').css('color', '#090');
+					$('#toggle-marquee').html('关闭');
+					return 'on';
+				}, marquee_off = () => {
+					$('#status-marquee').html('off').css('color', '#09f');
+					$('#toggle-marquee').html('开启');
+					return 'off';
+				};
+
+				getStorage('marquee') === 'on' ? marquee_on() : marquee_off();
+				$('#ctrl-marquee').click(function () {$('#intro').is(':hidden') ? marquee_off() : marquee_on();});
+				$('#toggle-marquee').click(function () {$('#ctrl-marquee').click();});
+
+				// ---------------- speed ---------------- //
+				const speed_on = () => {
+					$('#status-speed').html('on').css('color', '#090');
+					$('#toggle-speed').html('关闭');
+					return 'on';
+				}, speed_off = () => {
+					$('#status-speed').html('off').css('color', '#09f');
+					$('#toggle-speed').html('开启');
+					return 'off';
+				};
+
+				getStorage('speed') === 'on' ? speed_on() : speed_off();
+				$('#toggle-speed').click(function () {setStorage('speed', getStorage('speed') === 'on' ? speed_off() : speed_on());});
+
+				// ---------------- ranklist ---------------- //
+				const cf_url_candidates = ['codeforces.com', 'codeforc.es', 'codeforces.ml'],
+				cf_succ = r => {
+					recent.splice(recent.indexOf(r.id), 1), recent.unshift(r.id);
+					setStorage('ranklist-recent', JSON.stringify(recent));
+					parseRanklist(r.data);
+				}, cf_fail = () => $('#rankTable>tbody>tr>td').html('Network failed. Please check your network or refresh this page.'),
+				ranklist_parallel = () => {
+					$('#status-ranklist-mode').html('并行请求').css('color', '#090');
+					return 'parallel';
+				}, ranklist_serial = () => {
+					$('#status-ranklist-mode').html('顺序请求').css('color', '#09f');
+					return 'serial';
+				};
+				let recent = getStorage('ranklist-recent');
+				recent = (recent ? JSON.parse(recent) : cf_url_candidates.map((x, i) => i));
+
+				if (getStorage('ranklist-mode') === 'parallel') {
+					ranklist_parallel();
+					new Promise((fulfill, reject) => {
+						let error_cnt = 0, handle_err = () => {
+							if (++error_cnt === cf_url_candidates.length)
+								reject();
+						};
+
+						for (let i = 0; i < cf_url_candidates.length; ++i) {
+							$.ajax('https://' + cf_url_candidates[i] + '/api/user.info?handles=' + persons.join(';'), {
+								type : 'GET',
+								crossDomain : true,
+								dataType : 'jsonp',
+								jsonp : 'jsonp',
+								success : result => fulfill({id : i, data : result}),
+								error : handle_err
+							});
+						}
+					}).then(cf_succ, cf_fail);
+				} else {
+					let f, p = null;
+					ranklist_serial();
+					for (let i of recent) {
+						f = () => new Promise((fulfill, reject) => {
+							$.ajax('https://' + cf_url_candidates[i] + '/api/user.info?handles=' + persons.join(';'), {
+								type : 'GET',
+								crossDomain : true,
+								dataType : 'jsonp',
+								jsonp : 'jsonp',
+								success : result => fulfill({id : i, data : result}),
+								error : reject
+							});
+						});
+						p = (p ? p.catch(f) : f());
+					}
+					p.then(cf_succ, cf_fail);
+				}
+
+				$('#toggle-ranklist-mode').click(function () {setStorage('ranklist-mode', getStorage('ranklist-mode') === 'parallel' ? ranklist_serial() : ranklist_parallel());});
+
+				// ---------------- check-version ---------------- //
+				const check_version_on = () => {
+					$('#status-check-version').html('on').css('color', '#090');
+					$('#toggle-check-version').html('关闭');
+					return 'on';
+				}, check_version_off = () => {
+					$('#status-check-version').html('off').css('color', '#09f');
+					$('#toggle-check-version').html('开启');
+					return 'off';
+				};
+
+				getStorage('check-version') === 'off' ? check_version_off() : check_version_on();
+				$('#toggle-check-version').click(function () {setStorage('check-version', getStorage('check-version') === 'off' ? check_version_on() : check_version_off());});
+
+				// ---------------- pagination ---------------- //
+				const pagination_normal = () => {
+					$('#status-pagination').html('正常').css('color', '#09f');
+					$('#example-pagination').html('例：6 7 8 9 <span style="text-decoration: underline">10</span> 11 12 13 14');
+					return 'normal';
+				}, pagination_doubling = () => {
+					$('#status-pagination').html('倍增').css('color', '#630');
+					$('#example-pagination').html('例：1 3 7 9 <span style="text-decoration: underline">10</span> 11 13 17 25 [AtCoder 型]');
+					return 'doubling';
+				}, pagination_binary = () => {
+					$('#status-pagination').html('二进制').css('color', '#090');
+					$('#example-pagination').html('例：1 8 9 <span style="text-decoration: underline">10</span> 11 12 16 32 [树状数组型]');
+					return 'binary';
+				};
+
+				switch (getStorage('pagination')) {
+					case 'doubling': pagination_doubling(); break;
+					case 'binary': pagination_binary(); break;
+					default: pagination_normal(); break;
+				}
+
+				$('#toggle-pagination').click(function() {
+					setStorage('pagination', (cur => {
+							switch (cur) {
+								case 'doubling': return pagination_binary();
+								case 'binary': return pagination_normal();
+								default: return pagination_doubling();
+							}
+						})(getStorage('pagination'))
+					);
+				});
+
+				// ---------------- codeforces-portal ---------------- //
+				const codeforces_portal_in_contest = () => {
+					$('#status-codeforces-portal').html('比赛内链接').css('color', '#09f');
+					$('#example-codeforces-portal').html('例：<a href="https://codeforces.com/contest/1/problem/A" target="_blank">https://codeforces.com/contest/1/problem/A</a>。');
+					return 'in-contest';
+				}, codeforces_portal_in_problemset = () => {
+					$('#status-codeforces-portal').html('题库内链接').css('color', '#090');
+					$('#example-codeforces-portal').html('例：<a href="https://codeforces.com/problemset/problem/1/A" target="_blank">https://codeforces.com/problemset/problem/1/A</a>。');
+					return 'in-problemset';
+				}
+
+				getStorage('codeforces-portal') === 'in-problemset' ? codeforces_portal_in_problemset() : codeforces_portal_in_contest();
+				$('#toggle-codeforces-portal').click(function () {setStorage('codeforces-portal', getStorage('codeforces-portal') === 'in-problemset' ? codeforces_portal_in_contest() : codeforces_portal_in_problemset());});
+
+				// ---------------- atcoder-portal ---------------- //
+				const atcoder_portal_major = () => {
+					$('#status-atcoder-portal').html('主站链接').css('color', '#09f');
+					$('#example-atcoder-portal').html('例：<a href="https://atcoder.jp/contests/agc001/tasks/agc001_a" target="_blank">https://atcoder.jp/contests/agc001/tasks/agc001_a</a>。');
+					return 'major';
+				}, atcoder_portal_minor = () => {
+					$('#status-atcoder-portal').html('副站链接').css('color', '#090');
+					$('#example-atcoder-portal').html('例：<a href="https://agc001.contest.atcoder.jp/tasks/agc001_a" target="_blank">https://agc001.contest.atcoder.jp/tasks/agc001_a</a>。');
+					return 'minor';
+				}
+
+				getStorage('atcoder-portal') === 'minor' ? atcoder_portal_minor() : atcoder_portal_major();
+				$('#toggle-atcoder-portal').click(function () {setStorage('atcoder-portal', getStorage('atcoder-portal') === 'minor' ? atcoder_portal_major() : atcoder_portal_minor());});
+			});
+		</script>
+	</head>
+	<body>
+		<div class="title">
+			<div class="opacity-3 flex" style="height: 160px">
+				<div style="width: 100%">
+					<h2 class="cen">OI 中转站 - 小工具</h2>
+					<p class="cen" id="dispTime">当前时间: 2020-7-31 12:00:00</p>
+					<p class="ri" id="motto" style="opacity: 0; margin-top: -20px">slowly step into the fast-paced life.</p>
+				</div>
+			</div>
+		</div>
+		<div class="dmarquee" style="height: 25px">
+			<div class="button-transparent" id="ctrl-marquee" style="float: left">
+				<p class="hint">开启字幕</p>
+			</div>
+			<div class="button-transparent" id="ctrl-export" style="float: right">
+				<p class="hint">导出表格</p>
+			</div>
+			<div style="overflow: hidden">
+				<marquee id="intro" scrollamount="1000" style="color: #999; display: none">bestFy is the cutest !</marquee>
+			</div>
+		</div>
+		<div class="main">
+			<div class="opacity-4 padding" style="min-height: 1344px">
+				<div class="cen big-button">
+					<button onclick="location.href='index.html'">做题记录</button><button>小工具</button><button onclick="location.href='templates.html'">模板</button><button onclick="location.href='memos.html'">便笺</button>
+				</div>
+				<fieldset>
+					<legend>小工具</legend>
+					<div class="border-tool padding-1" id="div-power-mod">
+						<p>快速幂 (幂模运算，计算 <em>a<sup>n</sup></em> mod <em>m</em>):</p>
+						<p><label><em>a</em>: </label><input name="a" placeholder="a" class="cen text-input" /> <label><em>n</em>: </label><input name="n" placeholder="n" class="cen text-input" /> <label><em>m</em>: </label><input name="m" placeholder="m" class="cen text-input" /> <button class="big-button" id="calc-power-mod">计算</button></p>
+						<p>结果: <input name="result" placeholder="result" readonly="readonly" class="cen text-input" style="width: 250px" /></p>
+						<hr />
+						<div style="font-size: smaller">
+							<p id="status-power-mod" style="color: #090"></p>
+							<p>注：可以在 JS 控制台中使用 <code>pow</code> 函数来进行快速幂。</p>
+						</div>
+					</div>
+					<div class="border-tool padding-1" id="div-primality-test">
+						<p>质数判定</p>
+						<p><label><em>n</em>: </label><input name="n" placeholder="n" class="cen text-input" style="width: 200px" /> <button class="big-button" id="calc-primality-test">判定</button></p>
+						<p>结果：<input name="result" placeholder="result" readonly="readonly" class="cen text-input" style="width: 250px" /></p>
+						<hr />
+						<div style="font-size: smaller">
+							<p id="status-primality-test" style="color: #090"></p>
+							<p>注：可以在 JS 控制台中使用 <code>isp</code> 函数来进行质数判定。</p>
+						</div>
+					</div>
+					<div class="border-tool padding-1" id="div-ranklist">
+						<p>Rating 排行榜 (Codeforces, Links)</p>
+						<table class="cen main-table" id="rankTable" style="width: 100%">
+							<thead>
+								<tr>
+									<th style="width: 14%"><span class="sortlink">Username</span></th>
+									<th style="width: 10%"><span class="sortlink">First Name</span></th>
+									<th style="width: 10%"><span class="sortlink">Last Name</span></th>
+									<th style="width: 9%"><span class="sortlink">Rating</span></th>
+									<th style="width: 9%"><span class="sortlink">Max Rating</span></th>
+									<th style="width: 18%"><span class="sortlink">Last Online Time</span></th>
+									<th style="width: 30%"><span class="sortlink">Personal Blog Link</span></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td colspan="7" style="line-height: 2em">Loading ...</td>
+								</tr>
+							</tbody>
+						</table>
+						<p>ps: 要申请者请提供在 <strong>Codeforces</strong> 上的 ID (即 handle) 以及个人博客链接 (可选)，联系<a href="mailto:yhx0706@163.com">此处</a>。<span style="color: transparent">(Q<sup>2</sup> = 0x1af97fbd)</span></p>
+						<p>或者也可以来 <a href="https://github.com/yhx-12243/OI-transit" target="_blank">GitHub</a> 提交 Issue/Pull Request。</p>
+					</div>
+					<div class="border-tool padding-1" id="div-portal-settings">
+						<p>传送门 (跳转链接) 设置<br /><span style="color: #090; font-size: smaller">注：该功能对题解/便笺中出现的链接无效。</span></p>
+						<p><label>Codeforces 传送门：<strong id="status-codeforces-portal"></strong></label> <button class="big-button" id="toggle-codeforces-portal">切换</button><br /><span style="color: #090; font-size: smaller" id="example-codeforces-portal"></span></p>
+						<p><label>AtCoder 传送门：<strong id="status-atcoder-portal"></strong></label> <button class="big-button" id="toggle-atcoder-portal">切换</button><br /><span style="color: #090; font-size: smaller" id="example-atcoder-portal"></span></p>
+					</div>
+					<div class="border-tool padding-1" id="div-settings">
+						<p>更多设置 <span style="color: transparent">(将鼠标移到标题栏下方空白处的两端有惊喜哦！)</span></p>
+						<p><label>当前字幕状态：<strong id="status-marquee"></strong></label> <button class="big-button" id="toggle-marquee"></button></p>
+						<p><label>极速浏览模式 (敬请期待)：<strong id="status-speed"></strong></label> <button class="big-button" id="toggle-speed"></button></p>
+						<p><label>Codeforces rating 排行榜渲染方式：<strong id="status-ranklist-mode"></strong></label> <button class="big-button" id="toggle-ranklist-mode">切换</button><br /><span style="color: #090; font-size: smaller">具体区别可以在开发者模式 (F12) 的「网络」(Network) 中看到。</span></p>
+						<p><label>自动检查版本：<strong id="status-check-version"></strong></label> <button class="big-button" id="toggle-check-version"></button></p>
+						<p><label>分页模式：<strong id="status-pagination"></strong></label> <button class="big-button" id="toggle-pagination">切换</button><br /><span style="color: #090; font-size: smaller" id="example-pagination"></span></p>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+	</body>
+</html>
