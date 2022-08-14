@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+		<title>[lg8367][loj3739][LNOI2022] 盒</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$', '$']], displayMath: [['$$', '$$']]}});</script>
+		<script src="../additional_files/js/sh_main.min.js"></script>
+		<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	</head>
+	<body>
+		<h3>题目描述</h3>
+		<p>有 $n$ 个不同的盒子排成一排。在初始状态下，第 $i$ 个盒子放有 $a_i$ 个货物，总货物数量为 $S=\sum_{i=1}^{n}a_i$。对于非负整数数组 $(b_1,b_2,\cdots,b_n)$ 满足 $\sum_{i=1}^{n}b_i=S$，考察以下问题：</p>
+		<p>你想让第 $i$ 个盒子中拥有恰好 $b_i$ 个货物，为此你可以做如下操作若干次：对两个相邻的盒子，把其中一个盒子的<strong>恰好一个</strong>货物移动至另一个。对 $i,i+1$（$1\le i&lt;n$）号盒子做<strong>一次</strong>操作的代价为 $w_i$。<strong>注意：将 $\boldsymbol{i}$ 号盒子的一个货物移动到 $\boldsymbol{i+1}$ 号盒子和将 $\boldsymbol{i+1}$ 号盒子的一个货物移动到 $\boldsymbol{i}$ 号盒子的代价都是 $\boldsymbol{w_i}$</strong>。你需要保证在操作中不存在盒子中的货物数量是负数。</p>
+		<p>在以上问题下，定义从初始状态达到第 $i$ 个盒子拥有恰好 $b_i$ 个货物的状态的最小代价为 $\operatorname{val}(b_1,b_2,\cdots,b_n)$，你需要求出对所有满足 $\sum_{i=1}^{n}b_i=S$ 的非负整数数组 $(b_1,b_2,\cdots,b_n)$，$\operatorname{val}(b_1,b_2,\cdots,b_n)$ 的和。输出这个答案对 $998244353$ 取模后的结果。</p>
+		<p><strong>多组数据</strong>，$n\le5\times10^5$，$S\le2\times10^6$。</p>
+
+		<h3>题解</h3>
+		<p>定义 $s_i=\sum\limits_{j=1}^{i}a_j$，则由插板法易得答案为如下式子：</p>
+		<p>$$\sum_{i=1}^{n-1}w_i\sum_{j=0}^S|s_i-j|\binom{i+j-1}{i-1}\binom{n-i+S-j-1}{n-i-1}$$</p>
+		<p>只需对每个 $i$ 求后半部分即可，记其为 $p_i$。</p>
+		<p>把绝对值 $|s_i-j|$ 拆开，就可以得到：</p>
+		<p>$$p_i=2\sum_{j=0}^{s_i}(s_i-j)\binom{i+j-1}{i-1}\binom{n-i+S-j-1}{n-i-1}+\sum_{j=0}^S(j-s_i)\binom{i+j-1}{i-1}\binom{n-i+S-j-1}{n-i-1}$$</p>
+		<p>前后式子的区别就在于 $s_i/S$ 的上下界，所以先考虑前面的式子，经过尝试无果，所以先从后面的式子开始考虑，尝试从简单的式子可到启发，推出更难的式子。</p>
+		<p>后面的式子显然可以拆成两个子问题：</p>
+		<p>$$\sum_{j=0}^S\binom{i+j-1}{i-1}\binom{n-i+S-j-1}{S-j}$$</p>
+		<p>以及</p>
+		<p>$$\sum_{j=0}^Sj\binom{i+j-1}{i-1}\binom{n-i+S-j-1}{S-j}$$</p>
+		<p>第二个式子这个 $j$ 看起来就不爽，考虑如何把它吃掉。</p>
+		<p>发现，$j\dbinom{i+j-1}{j}=i\dbinom{i+j-1}{j-1}$，查完后没有与 $j$ 有关的系数，所以后面的式子可以变成：</p>
+		<p>$$\sum_{j=0}^Si\binom{i+j-1}{j-1}\binom{n-i+S-j-1}{S-j}$$</p>
+		<p>当 $j=0$ 时 $j-1=-1$，在组合数里很难处理，发现它在原式中对应为 $0$，所以得到原式等于（下式中把 $j$ 减去了 $1$）：</p>
+		<p>$$i\sum_{j=0}^{S-1}\binom{i+j}{i}\binom{n-i+S-j-2}{S-j-1}$$</p>
+		<p>和第一个式子（$\sum\limits_{j=0}^S\dbinom{i+j-1}{i-1}\dbinom{n-i+S-j-1}{S-j}$）有了等价的形式，只需将 $n$ 和 $i$ 减去 $1$，$S$ 加上 $1$ 即得第一个式子了。</p>
+		<p>而第一个式子（$\sum\limits_{j=0}^S\dbinom{i+j-1}{j}\dbinom{n-i+S-j-1}{S-j}$）中两个组合数的上指标和下指标的和固定，可以使用范德蒙雷恒等式进行计算。</p>
+		<p>现在来思考前面的式子（$\sum\limits_{j=0}^{s_i}(s_i-j)\dbinom{i+j-1}{i-1}\dbinom{n-i+S-j-1}{n-i-1}$），同理，它可以转化为 $\sum\limits_{j=0}^{s_i}\dbinom{i+j-1}{i-1}\dbinom{n-i+S-j-1}{n-i-1}$ 的子问题，考虑如何进行计算。</p>
+		<p>发现对于所有需求，$i$ 和 $s_i$ 是双增的，所以可以考虑维护两个指针 $x$ 和 $y$，表示 $i=x,s_i=y$ 时的答案，当指针 $y$ 移动时，新的答案是好维护的，现在考虑指针 $x$ 移动时答案的变化。</p>
+		<p>受到范德蒙雷恒等式的启发，我们考虑它的证明，它的证明非常巧妙，用了一个优美的<strong>组合意义</strong>：</p>
+		<p>在 $n\times m$ 的网格上沿网格线走路，只能向下或向右走，从左上角走到右下角的方案数等于 $\dbinom{n}{m}$；而另一方面，枚举在经过第 $i$ 行时的纵坐标，便可以得到这道题中的需要的形式。</p>
+		<p>现在，它的组合意义应该修改为：</p>
+		<p>在 $n\times m$ 的网格上沿网格线走路，只能向下或向右走，从左上角走到右下角的方案数等于 $\dbinom{n}{m}$，并且在经过第 $x$ 行时的纵坐标不能超过 $y$，求方案数。</p>
+		<p>这时候，非常<strong>关键</strong>的一步来了，它等同于：</p>
+		<p>在 $n\times m$ 的网格上沿网格线走路，只能向下或向右走，从左上角走到右下角的方案数等于 $\dbinom{n}{m}$，并且在经过第 $y$ 行时的横坐标不能小于 $x$，求方案数。</p>
+		<p>此时便可以将式子转化为对 $x$（也就是 $i$） 的求和，可以在 $\mathcal{O}(1)$ 的时间复杂度内完成计算。</p>
+		<p>综上所述，这个问题就可以在单组询问 $\mathcal{O}(n+S)$ 的时间复杂度内解决了。</p>
+
+		<h3>代码</h3>
+
+		<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">#include &lt;bits/stdc++.h&gt;
+
+using namespace std;
+
+const int N = 5e5 + 5, S = 3e6 + 5, P = 998244353;
+
+int fac[S], iFac[S];
+int s[N], w[N];
+
+int C(int x, int y)
+{
+    if (x &lt; 0 || y &lt; 0 || x &lt; y) {
+        return 0;
+    }
+    return 1ll * fac[x] * iFac[y] % P * iFac[x - y] % P;
+}
+
+struct op
+{
+    int n, m, x, y, res;
+
+    void Init()
+    {
+        res = 0;
+        for (int i = 0; i &lt;= y; ++i) {
+            res = (res + 1ll * C(x + i - 1, x - 1) * C(n - x + m - i - 1, n - x - 1)) % P;
+        }
+        return;
+    }
+
+    void addx()
+    {
+        ++x;
+        res = (res - 1ll * C(x + y - 1, x - 1) * C(n - x + m - y - 1, n - x)) % P;
+        return;
+    }
+
+    void addy()
+    {
+        ++y;
+        res = (res + 1ll * C(x + y - 1, x - 1) * C(n - x + m - y - 1, n - x - 1)) % P;
+        return;
+    }
+} p[2];
+
+signed main()
+{
+    fac[0] = iFac[0] = 1;
+    for (int i = 1; i &lt; S; ++i) {
+        fac[i] = 1ll * fac[i - 1] * i % P;
+        iFac[i] = (i == 1 ? 1 : 1ll * iFac[P % i] * (P - P / i) % P);
+    }
+    for (int i = 1; i &lt; S; ++i) {
+        iFac[i] = 1ll * iFac[i] * iFac[i - 1] % P;
+    }
+    int T;
+    scanf(&quot;%d&quot;, &amp;T);
+    while (T--) {
+        int n;
+        scanf(&quot;%d&quot;, &amp;n);
+        for (int i = 1; i &lt;= n; ++i) {
+            scanf(&quot;%d&quot;, &amp;s[i]);
+            s[i] += s[i - 1];
+        }
+        for (int i = 1; i &lt; n; ++i) {
+            scanf(&quot;%d&quot;, &amp;w[i]);
+        }
+        int A = 0;
+        p[0].n = n    , p[0].m = s[n]    , p[0].x = 1, p[0].y = s[1];
+        p[1].n = n + 1, p[1].m = s[n] - 1, p[1].x = 2, p[1].y = s[1] - 1;
+        p[0].Init(), p[1].Init();
+        for (int i = 1; i &lt; n; ++i) {
+            int res = (2ll * s[i] * p[0].res - 2ll * i * p[1].res +
+                        1ll * i * C(n + s[n] - 1, n) -
+                        1ll * s[i] * C(n + s[n] - 1, n - 1)) % P;
+            A = (A + 1ll * w[i] * res) % P; 
+            p[0].addx();
+            p[1].addx();
+            for (int j = 1; j &lt;= s[i + 1] - s[i]; ++j) {
+                p[0].addy();
+                p[1].addy();
+            }
+        }
+        printf(&quot;%d\n&quot;, (A % P + P) % P);
+    }
+    return 0;
+}
+</code><script>syntax_highlight()</script>
+</pre></div>
+	</body>
+</html>
