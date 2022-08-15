@@ -14,7 +14,7 @@
 		<p>有 $n$ 个不同的盒子排成一排。在初始状态下，第 $i$ 个盒子放有 $a_i$ 个货物，总货物数量为 $S=\sum_{i=1}^{n}a_i$。对于非负整数数组 $(b_1,b_2,\cdots,b_n)$ 满足 $\sum_{i=1}^{n}b_i=S$，考察以下问题：</p>
 		<p>你想让第 $i$ 个盒子中拥有恰好 $b_i$ 个货物，为此你可以做如下操作若干次：对两个相邻的盒子，把其中一个盒子的<strong>恰好一个</strong>货物移动至另一个。对 $i,i+1$（$1\le i&lt;n$）号盒子做<strong>一次</strong>操作的代价为 $w_i$。<strong>注意：将 $\boldsymbol{i}$ 号盒子的一个货物移动到 $\boldsymbol{i+1}$ 号盒子和将 $\boldsymbol{i+1}$ 号盒子的一个货物移动到 $\boldsymbol{i}$ 号盒子的代价都是 $\boldsymbol{w_i}$</strong>。你需要保证在操作中不存在盒子中的货物数量是负数。</p>
 		<p>在以上问题下，定义从初始状态达到第 $i$ 个盒子拥有恰好 $b_i$ 个货物的状态的最小代价为 $\operatorname{val}(b_1,b_2,\cdots,b_n)$，你需要求出对所有满足 $\sum_{i=1}^{n}b_i=S$ 的非负整数数组 $(b_1,b_2,\cdots,b_n)$，$\operatorname{val}(b_1,b_2,\cdots,b_n)$ 的和。输出这个答案对 $998244353$ 取模后的结果。</p>
-		<p><strong>多组数据</strong>，$n\le5\times10^5$，$S\le2\times10^6$。</p>
+		<p><strong>多组数据</strong>，$T\le5$，$n\le5\times10^5$，$S\le2\times10^6$。</p>
 
 		<h3>题解</h3>
 		<p>定义 $s_i=\sum\limits_{j=1}^{i}a_j$，则由插板法易得答案为如下式子：</p>
