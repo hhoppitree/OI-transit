@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+		<title>[Codeforces1163F]Indecisive Taxi Fee</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$', '$']], displayMath: [['$$', '$$']]}});</script>
+		<script src="../additional_files/js/sh_main.min.js"></script>
+		<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	</head>
+	<body>
+		<h3>题目描述</h3>
+		<p>给定初始可重集 $A$，保证其所有元素均为 $n$ 以内的非负整数且 $i$ 一共有 $a_i$ 个，现在从 Alice 开始轮流操作，每次 Alice 可以将其划分为两个子集，Bob 可以从中选择一个子集删去，并将剩余的数 $-1$，任意时刻，当 $0\in A$（Alice 获胜）或 $A=\varnothing$（Bob 获胜）时，游戏结束，求最后的获胜方。</p>
+		<p><strong>多组数据</strong>，$\sum n\le10^6$。</p>
+
+		<h3>题解</h3>
+		<p>定义当前局势所对应的函数 $f(A)=\sum\dfrac{1}{2^{A_i}}$，则容易发现，在单次操作中，Bob 可以使得 $f(A)$ 不增（选较小的一边），所以 $f(A)&lt;1$ 时 Bob 必胜；</p>
+		<p>而当 $f(A)\ge1$ 时，由于 $\dfrac{1}{2^{A_i}}$ 的形式，所以 Alice 可以将其划分成两个集合，使得每个集合的 $f$ 值都 $\ge\dfrac{1}{2}$，所以最后的 $f(A)$ 肯定可以做到 $\ge1$，此时 Alice 必胜。</p>
+		<p>综上所述，Alice 必胜的充要条件是 $\sum\dfrac{1}{2^{A_i}}\ge1$，类似进位的方式单组询问 $\mathcal{O}(n)$ 判断即可。 </p>
+
+		<h3>代码</h3>
+
+		<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">#include &lt;bits/stdc++.h&gt;
+
+using namespace std;
+
+const int N = 1e6 + 5;
+
+int a[N];
+
+signed main()
+{
+    int T;
+    scanf(&quot;%d&quot;, &amp;T);
+    while (T--) {
+        int n;
+        scanf(&quot;%d&quot;, &amp;n);
+        for (int i = 0; i &lt;= n; ++i) {
+            scanf(&quot;%d&quot;, &amp;a[i]);
+        }
+        for (int i = n; i; --i) {
+            a[i - 1] += a[i] &gt;&gt; 1;
+        }
+        if (a[0]) {
+            puts(&quot;Alice&quot;);
+        } else {
+            puts(&quot;Bob&quot;);
+        }
+    }
+    return 0;
+}
+</code><script>syntax_highlight()</script>
+</pre></div>
+	</body>
+</html>

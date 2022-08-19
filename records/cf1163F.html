@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+		<title>[Codeforces1163F]Indecisive Taxi Fee</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$', '$']], displayMath: [['$$', '$$']]}});</script>
+		<script src="../additional_files/js/sh_main.min.js"></script>
+		<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	</head>
+	<body>
+		<h3>题目描述</h3>
+		<p>给定一张 $n$ 个点，$m$ 条边的带权无向图，$q$ 次询问在第 $x$ 条边的边权变为 $y$ 的情况下，$1$ 号点到 $n$ 号点的最短路长度是多少。</p>
+		<p>$n,m,q\le2\times10^5$。</p>
+
+		<h3>题解</h3>
+		<p>先随便求出一条 $1\sim n$ 的最短路，再分别以 $1$ 号点和 $n$ 号店为源点跑一次单源最短路，则当修改的边不在原最短路上时，此时的最短路为原最短路和**强制经过**这条边的最短路的长度较小值，这是好求的。</p>
+		<p>当修改的边在原最短路上时，此时的最短路为原最短路减去这条边边权的变化量和**强制不经过**这条边的最短路的长度较小值，问题就落在了这个删边最短路问题上。</p>
+		<p>容易发现，此时的最短路一定走过了原最短路的一段前缀和一段后缀，因此，一定存在一条不在原最短路上的边 $(u,v)$，使得此时的最短路为 $1-u-v-n$ 且 $1-u$ 的路径上一定覆盖了原最短路的一个前缀，$v-n$ 的路径上一定覆盖了原最短路上的一个后缀且 $1-u$ 为 $1$ 号点和 $u$ 号点之间的最短路径，$v-n$ 为 $v$ 号点和 $n$ 号点之间的最短路径。</p>
+		<p>于是就对每一个 $x$ 求出其 $1-x$ 和 $x-n$ 的任意一条最短路的长度以及其和原最短路的前缀 / 后缀交集的长度，此时就相当于区间（未覆盖到的区间）取 $\min$ 和单点询问，可以用线段树维护。</p>
+		<p>不过更巧妙的方式是发现所有询问都在修改以后，所以用一个 $\rm multiset$ 维护即可。</p>
+        <p>总时间复杂度 $\mathcal{O}(n\log n)$（此处视 $n,m,q$ 同阶）。</p>
+
+		<h3>代码</h3>
+
+		<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">#include &lt;bits/stdc++.h&gt;
+
+using namespace std;
+
+const int N = 2e5 + 5, M = 2e5 + 5;
+
+int _x[M], _y[M], _v[M];
+vector&lt; pair&lt;pair&lt;int, int&gt;, int&gt; &gt; G[N];
+int l[N], r[N], lst[N];
+long long dis[2][N];
+int inP[N], inPath[M];
+
+void getDis(int wh, int st)
+{
+    memset(dis[wh], 0x3f, sizeof(dis[wh]));
+    priority_queue&lt; pair&lt;long long, int&gt;, vector&lt; pair&lt;long long, int&gt; &gt;, greater&lt; pair&lt;long long, int&gt; &gt; &gt; pq;
+    dis[wh][st] = 0;
+    pq.push(make_pair(0, st));
+    while (!pq.empty()) {
+        int x = pq.top().second;
+        if (pq.top().first &gt; dis[wh][x]) {
+            pq.pop();
+            continue;
+        }
+        pq.pop();
+        for (int i = 0; i &lt; G[x].size(); ++i) {
+            int v = G[x][i].first.first;
+            if (dis[wh][x] + G[x][i].first.second &lt; dis[wh][v]) {
+                dis[wh][v] = dis[wh][x] + G[x][i].first.second;
+                if (!wh) {
+                    if (!inP[v]) {
+                        l[v] = l[x];
+                    }
+                } else {
+                    lst[v] = G[x][i].second;
+                    if (!inP[v]) {
+                        r[v] = r[x];
+                    }
+                }
+                pq.push(make_pair(dis[wh][v], v));
+            }
+        }
+    }
+    return;
+}
+
+vector&lt;int&gt; getPath(int n)
+{
+    vector&lt;int&gt; path;
+    int now = 1, gs = 0;
+    path.push_back(1);
+    inP[now] = 1;
+    l[now] = 1, r[now] = 0;
+    while (now != n) {
+        path.push_back(now);
+        int id = lst[now];
+        inPath[id] = ++gs;
+        now = _x[id] ^ _y[id] ^ now;
+        inP[now] = 1;
+        l[now] = gs + 1, r[now] = gs;
+    }
+    return path;
+}
+
+vector&lt; pair&lt;int, long long&gt; &gt; xg[N];
+
+void add(int l, int r, long long val, int n)
+{
+    l = max(l, 1), r = min(r, n);
+    if (l &gt; r) {
+        return;
+    }
+    xg[l].push_back(make_pair(0, val));
+    xg[r + 1].push_back(make_pair(1, val));
+    return;
+}
+
+long long res[N];
+
+void calc(int n)
+{
+    multiset&lt;long long&gt; now;
+    for (int i = 1; i &lt;= n; ++i) {
+        for (int j = 0; j &lt; xg[i].size(); ++j) {
+            if (!xg[i][j].first) {
+                now.insert(xg[i][j].second);
+            } else {
+                now.erase(now.find(xg[i][j].second));
+            }
+        }
+        res[i] = (!now.size() ? 1e18 : *now.begin());
+    }
+    return;
+}
+
+signed main()
+{
+    int n, m, q;
+    scanf(&quot;%d%d%d&quot;, &amp;n, &amp;m, &amp;q);
+    for (int i = 1; i &lt;= m; ++i) {
+        scanf(&quot;%d%d%d&quot;, &amp;_x[i], &amp;_y[i], &amp;_v[i]);
+        G[_x[i]].push_back(make_pair(make_pair(_y[i], _v[i]), i));
+        G[_y[i]].push_back(make_pair(make_pair(_x[i], _v[i]), i));
+    }
+    getDis(1, n);
+    vector&lt;int&gt; path = getPath(n);
+    getDis(0, 1);
+    getDis(1, n);
+    for (int i = 1; i &lt;= m; ++i) {
+        if (inPath[i]) {
+            continue;
+        }
+        add(l[_x[i]], r[_y[i]], dis[0][_x[i]] + _v[i] + dis[1][_y[i]], path.size() - 1);
+        add(l[_y[i]], r[_x[i]], dis[0][_y[i]] + _v[i] + dis[1][_x[i]], path.size() - 1);
+    }
+    calc(path.size() - 1);
+    while (q--) {
+        int id, val;
+        scanf(&quot;%d%d&quot;, &amp;id, &amp;val);
+        if (!inPath[id]) {
+            printf(&quot;%lld\n&quot;, min(dis[0][n], min(dis[0][_x[id]] + val + dis[1][_y[id]],
+                                                dis[0][_y[id]] + val + dis[1][_x[id]])));
+        } else {
+            printf(&quot;%lld\n&quot;, min(dis[0][n] - _v[id] + val, res[inPath[id]]));
+        }
+    }
+    return 0;
+}
+</code><script>syntax_highlight()</script>
+</pre></div>
+	</body>
+</html>
