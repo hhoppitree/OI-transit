@@ -255,9 +255,16 @@ const
 	function char_offset(x, y) {return String.fromCharCode(x.charCodeAt() + y);}
 
 	function make_ac_link() {
-        if (x == "1000") {
-            return "https://atcoder.jp/contests/joisc2022/tasks/joisc2022_a";
-        }
+        const data = 'q6kZBaNgFAx3kJWfWZxsZGBkZJeIxE5CYicjsVOQ2KlI7DQkdjoSOwOJnYnEzkJiZyOxc3i5AA==';
+        AtCoderIDDict = RawDeflate.inflate(atob(data)).split('|').map(x => {
+			let l, r;
+			if (~x.indexOf('#')) {
+				[l, r] = x.split('#');
+			} else if (~x.indexOf('>')) {
+				[l, r] = x.split('>'), r = l + '_' + r;
+			} else return '';
+			return atcoder_flag ? `https://${l}.contest.atcoder.jp/tasks/${r}` : `https://atcoder.jp/contests/${l}/tasks/${r}`;
+		});
         return "";
 	}
 
