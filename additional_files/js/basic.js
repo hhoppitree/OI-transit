@@ -255,7 +255,7 @@ const
 	function char_offset(x, y) {return String.fromCharCode(x.charCodeAt() + y);}
 
 	function make_ac_link() {
-		if (x == ' joisc2022_a') {
+		if (x == '_joisc2022_a') {
             return `https://atcoder.jp/contests/joisc2022/tasks/joisc2022_a`;
         }
 	}
