@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+		<title>[Codeforces1033G]Chip Game</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$', '$']], displayMath: [['$$', '$$']]}});</script>
+		<script src="../additional_files/js/sh_main.min.js"></script>
+		<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	</head>
+	<body>
+		<h3>题目描述</h3>
+		<p>给定长度为 $n$ 的排列 $p$，每次可以选择两个距离 $\ge k$ 并且值相差 $1$ 的两个元素交换，最小化最终排列的字典序。。</p>
+		<p>$n\le5\times10^5$。</p>
+
+		<h3>题解</h3>
+		<p>考虑 $p$ 的逆排列，则原条件等价于每次可以选择两个相邻的元素且值相差 $\ge k$ 的进行交换，要求的即最小化值为 $1$ 的下标，在此基础上最小化值为 $2$ 的下标，以此类推。</p>
+		<p>使用冒泡排序，这样我们就得到了一个时间复杂度为 $\mathcal{O}(n^2)$ 的做法。</p>
+		<p>考虑冒泡排序转归并排序，则在归并的过程（设两序列分别为 $a,b$）中，设 $a$ 中当前的指针所指向的元素为 $p$，$b$ 中当前的指针所指向的元素为 $q$，则能先选 $q$ 当且仅当对于每个 $a$ 中每个 $p$ 以后的元素 $x$（含 $p$），$|q-x|\ge k$ 且 $q&lt;x$，即其后缀最小值不超过 $q+k$。</p>
+		<p>于是在每次归并的时候维护一下后缀最小值即可，时间复杂度 $\mathcal{O}(n\log n)$。</p>
+
+		<h3>代码</h3>
+
+        <div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">#include &lt;bits/stdc++.h&gt;
+
+using namespace std;
+
+const int N = 5e5 + 5;
+
+int m, a[N], b[N], mn[N];
+
+void solve(int l, int r)
+{
+    if (l == r) {
+        return;
+    }
+    int mid = (l + r) &gt;&gt; 1;
+    solve(l, mid);
+    solve(mid + 1, r);
+    for (int i = mid, now = 1e9; i &gt;= l; --i) {
+        mn[i] = now = min(now, a[i]);
+    }
+    int now = l, now1 = l, now2 = mid + 1;
+    while (now1 &lt;= mid || now2 &lt;= r) {
+        if (now1 &gt; mid || (now2 &lt;= r &amp;&amp; a[now2] + m &lt;= mn[now1])) {
+            b[now++] = a[now2++];
+        } else {
+            b[now++] = a[now1++];
+        }
+    }
+    for (int i = l; i &lt;= r; ++i) {
+        a[i] = b[i];
+    }
+    return;
+}
+
+signed main()
+{
+    int n;
+    scanf(&quot;%d%d&quot;, &amp;n, &amp;m);
+    for (int i = 1, x; i &lt;= n; ++i) {
+        scanf(&quot;%d&quot;, &amp;x);
+        a[x] = i;
+    }
+    solve(1, n);
+    for (int i = 1; i &lt;= n; ++i) {
+        b[a[i]] = i;
+    }
+    for (int i = 1; i &lt;= n; ++i) {
+        printf(&quot;%d\n&quot;, b[i]);
+    }
+    return 0;
+}
+</code><script>syntax_highlight()</script>
+</pre></div>
+	</body>
+</html>
