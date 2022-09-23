@@ -1,0 +1,140 @@
+\documentclass[UTF8,12pt,a4paper]{ctexart} % 目录没改
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage{array}
+\usepackage{diagbox}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{CJKfntef}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{lastpage}
+\usepackage{indentfirst}
+\usepackage{amsmath,amssymb}
+\usepackage{tabu}
+\usepackage[colorlinks,linkcolor=blue,anchorcolor=blue,citecolor=green,bookmarks=true]{hyperref}
+% \usepackage[breaklinks,colorlinks,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+\usepackage{bookmark}
+\usepackage{inconsolata}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{paralist}
+\usepackage{multirow}
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+\usepackage{xcolor}
+\usepackage{endnotes}
+\usepackage{multirow}
+\usepackage{notoccite}
+\usepackage{longtable}
+\usepackage{geometry}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{tabu}
+\usepackage{xeCJK}
+\usepackage{CJK}                   
+\usepackage{CJKfntef}        
+\usepackage{fancyhdr}               
+\usepackage{graphicx}                 
+\usepackage{lastpage}    
+\usepackage{listings}
+\usepackage{fancybox}
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{layout}
+\usepackage{titletoc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{ctex}
+\usepackage{mathrsfs}
+\usepackage{hyperref}
+\usepackage{xeCJKfntef, multicol}
+\setlength{\parindent}{2em}
+\geometry{left=2.45cm,right=2.45cm,top=2.75cm,bottom=2.6cm}
+%\setcounter{secnumdepth}{0}
+\let\itemize\compactitem
+\let\enditemize\endcompactitem
+\let\enumerate\compactenum
+\let\endenumerate\endcompactenum
+\let\description\compactdesc
+\let\enddescription\endcompactdesc
+
+\lstset{
+	basicstyle={      
+		\color{black}
+		\fontspec{Consolas}
+	},
+	keywordstyle={
+		\color{blue}
+		\fontspec{Consolas}
+	},
+	numberstyle={
+		\color{black}
+		\textbf
+	},
+	rulecolor=\color{blue},
+	numbers=left,                               
+	frame=single,                            
+	frameround=tttt,
+	morekeywords={Sample, Input, Output},   % 可以手动添加关键字
+}
+\setmonofont{Consolas}
+\newcommand{\stress}[1]{\textbf{\CJKunderdot{#1}}}
+\newfontfamily\code{Consolas}
+
+\definecolor{mys}{rgb}{1,0.2,0}%一个颜色
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\lstset{
+	numberstyle=\ttfamily\color{codegray}
+}
+
+\linespread{1.5}%修改行距
+
+\begin{document}
+	\fontsize{12pt}{12pt}\selectfont
+	%自行调整字体大小，适应排版
+	%需要调整到合适的大小才能好看
+	
+	\newpage
+	\pagestyle{fancy}
+	\lhead{\footnotesize \songti{天路}}
+	\cfoot{\footnotesize 第 \thepage \ 页\qquad  共  \pageref{LastPage} 页}
+	
+	\phantomsection
+	\addcontentsline{toc}{section}{【UER \#7】天路}
+	\section*{【UER \#7】天路}
+	\rhead{\footnotesize \songti{UER \#7}}
+	
+	\phantomsection
+	\addcontentsline{toc}{subsection}{题目描述}
+	\subsection*{【题目描述】}
+	
+	给定数列 $a_n$，对于任意 $2\le k\le n$，求 $\min\limits_{r-l+1=k}\{\max\limits_{l\le i\le r}(a_i)-\min\limits_{l\le i\le r}(a_i)\}$，允许有 $5\%$ 的相对误差。
+	
+	$n\le10^5$，$a_i\le10^6$。
+	
+	\phantomsection
+	\addcontentsline{toc}{subsection}{提示}
+	\subsection*{【提示】}
+	
+	Hint \#1：这个相对误差看着就很迷啊，它是用来干什么的呢？
+	
+	Hint \#2：显然，答案序列是不降的。
+	
+	Hint \#3：当我们知道 $\max\limits_{l\le i\le r}(a_i)-\min\limits_{l\le i\le r}(a_i)$ 的限制时，可以很方便地计算出它在答案中的第一次出现。
+	
+	Hint \#4：取一些关键值作为答案的估计。
+	
+	\phantomsection
+	\addcontentsline{toc}{subsection}{题解}
+	\subsection*{【题解】}
+	
+	将 $[1.05^{i},1.05^{i+1})$ 中的答案统一估算为 $1.05^i$，对 $\log_{1.05}{a_i}$ 个可能的答案分别使用双指针进行扫描即可，时间复杂度 $\mathcal{O}(n(\log n+\log a_i))$。
+	
+	
+\end{document}
