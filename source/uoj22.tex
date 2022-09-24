@@ -107,34 +107,34 @@
 	
 	\phantomsection
 	\addcontentsline{toc}{section}{【UER \#7】天路}
-	\section*{【UER \#7】天路}
+	\section*{【UR \#1】外星人}
 	\rhead{\footnotesize \songti{UER \#7}}
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题目描述}
 	\subsection*{【题目描述】}
 	
-	给定数列 $a_n$，对于任意 $2\le k\le n$，求 $\min\limits_{r-l+1=k}\{\max\limits_{l\le i\le r}(a_i)-\min\limits_{l\le i\le r}(a_i)\}$，允许有 $5\%$ 的相对误差。
+	给定正整数 $x$ 与数列 $a_n$，求将 $a$ 重新排列后 $x\bmod a_1\bmod a_2\bmod\cdots\bmod a_n$ 的最大值，并输出方案数，对 $998244353$ 取模。
 	
-	$n\le10^5$，$a_i\le10^6$。
+	$n\le1000$，$x,a_i\le5000$。
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{思路}
 	\subsection*{【思路】}
 	
-	Step \#1：这个相对误差看着就很迷啊，它是用来干什么的呢？
+	Step \#1：如果 $x$ 已经小于 $a_i$ 了，那么 $a_i$ 就是没用的。
 	
-	Step \#2：显然，答案序列是不降的。
+	Step \#2：第一问可以设 $f_i$ 表示 $x=i$ 时最终的最大结果，简单 $\text{DP}$ 得出。
 	
-	Step \#3：当我们知道 $\max\limits_{l\le i\le r}(a_i)-\min\limits_{l\le i\le r}(a_i)$ 的限制时，可以很方便地计算出它在答案中的第一次出现。
+	Step \#3：第二问的问题在于不知道当前剩余的数所构成的集合。
 	
-	Step \#4：取一些关键值作为答案的估计。
+	Step \#4：考虑当最新一次的有效的 $\bmod x$ 确定后，假设当前 $a\rightarrow b$，则可以先将 $a\sim b$ 之间的数插入后方。
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题解}
 	\subsection*{【题解】}
 	
-	将 $[1.05^{i},1.05^{i+1})$ 中的答案统一估算为 $1.05^i$，对 $\log_{1.05}{a_i}$ 个可能的答案分别使用双指针进行扫描即可，时间复杂度 $\mathcal{O}(n(\log n+\log a_i))$。
+	设 $f_i$ 为 $x=i$ 时最终的最大结果，$g_i$ 为此时的方案数，则 $f$ 易通过 $\text{DP}$ 得出，计算 $g_i$ 时只需从 $g_j$ 乘上一个组合数的贡献系数（表示 $j$ 与 $i$ 之间的数在剩余的位置里插入，这两个数都是好算的），时间复杂度 $\mathcal{O}(nx)$。
 	
 	
 \end{document}
