@@ -102,45 +102,56 @@
 	
 	\newpage
 	\pagestyle{fancy}
-	\lhead{\footnotesize \songti{天路}}
+	\lhead{\footnotesize \songti{Density of subarrays}}
 	\cfoot{\footnotesize 第 \thepage \ 页\qquad  共  \pageref{LastPage} 页}
 	
 	\phantomsection
-	\addcontentsline{toc}{section}{【UER \#7】天路}
-	\section*{【UER \#7】天路}
-	\rhead{\footnotesize \songti{UER \#7}}
+	\addcontentsline{toc}{section}{【CF1158F】Density of subarrays}
+	\section*{【CF1158F】Density of subarrays}
+	\rhead{\footnotesize \songti{CF1158F}}
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题目描述}
 	\subsection*{【题目描述】}
 	
-	给定数列 $a_n$，对于任意 $2\le k\le n$，求 $\min\limits_{r-l+1=k}\{\max\limits_{l\le i\le r}(a_i)-\min\limits_{l\le i\le r}(a_i)\}$，允许有 $5\%$ 的相对误差。
+	给定数列 $a_n$，定义 $f(a)$ 为最大的 $p$ 使得任意 $x\in[c]^{p}$ 均为 $a$ 的子序列，对于所有 $p\in[0,n]$，求 $a$ 的 $f$ 值为 $p$ 的子序列个数，对 $998244353$ 取模。
 	
-	$n\le10^5$，$a_i\le10^6$。
+	$n,c\le3000$。
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{思路}
 	\subsection*{【思路】}
 	
-	Step \#1：这个相对误差看着就很迷啊，它是用来干什么的呢？
+	Step \#1：当 $a$ 确定时，如何快速计算 $f(a)$？
 	
-	Step \#2：显然，答案序列是不降的。
+	Step \#2：设 $f_{i,j}$ 表示以 $i$ 为开头，$f$ 值至少为 $j$ 的子序列个数，最后差分即可，但是 $f$ 如何转移呢？
 	
-	Step \#3：当我们知道 $\max\limits_{l\le i\le r}(a_i)-\min\limits_{l\le i\le r}(a_i)$ 的限制时，可以很方便地计算出它在答案中的第一次出现。
+	Step \#3：再预处理出一个 $g$ 数组，其中 $g_{l,r}$ 表示开头为 $l$，结尾为 $r$ 时，有多少子序列满足 $1\sim c$ 全部出现并且 $a_r$ 仅在 $r$ 位置出现，即可快速处理 $f$，时间复杂度 $\mathcal{O}\dfrac{n^3}{c}$。
 	
-	Step \#4：取一些关键值作为答案的估计。
+	Step \#4：当 $c$ 小的时候数据分治，将 $1\sim c$ 中选过的数也压进状态即可。
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题解}
 	\subsection*{【题解】}
 	
-	我们发现，可以将 $[1.05^{i},1.05^{i+1})$ 中的答案统一估算为 $1.05^i$，这样可以刚好利用上这个容差范围。
+	发现 $f(a)$ 等同于将 $a$ 从前到后扫一遍，记一个集合 $S$，初始为空，每次扫到 $a_i=x$ 时，若 $x\not\in S$，则将 $x$ 加入 $S$，若加入后 $S$ 的大小为 $c$，则将 $S$ 清空，最终 $f(a)$ 等同于 $S$ 被清空的次数，这个证明是显然的，由此还可以得到所有答案不为 $0$ 的 $p$ 都不超过 $\dfrac{n}{c}$。
 	
-	而显然，答案序列是不降的，所以我们可以用类似于整体二分的方法来做。
+	于是就可以 $\text{DP}$，设 $f_{i,j}$ 表示以 $i$ 为开头，$f$ 值至少为 $j$ 的子序列个数，再预处理出 $g_{l,r}$ 表示开头为 $l$，结尾为 $r$ 时，有多少子序列满足 $1\sim c$ 全部出现并且 $a_r$ 仅在 $r$ 位置出现。
 	
-	对于这 $\log_{1.05}{a_i}$ 个可能的答案，考虑对于每一个可能的答案 $x$，计算出最大的 $\text{lim}$ 使得当 $k\le\text{lim}$ 时，答案都不超过 $x$。
+	我们可以得到 $g_{l,r}=[a_l\ne a_r]2^{{\text cnt}_{a_l}-1}\prod\limits_{i\ne a_l\cup i\ne a_r}(2^{{\text cnt}_{a_l}}-1)$，其中 $\text{cnt}_x$ 表示 $x$ 在 $[l,r]$ 中出现的次数。
 	
-	双指针后就是个 $\text{RMQ}$，直接扫一遍即可，时间复杂度 $\mathcal{O}(n(\log n+\log a_i))$。
+	而由此可以得出 $f$ 的转移式：
 	
+	$$
+	\begin{aligned}
+		f_{i,j}=\sum\limits_{k=i+1}{n}g_{i,k}\sum\limits_{l=k+1}^{n}f_{l,j-1}
+	\end{aligned}
+	$$
+	
+	用前缀和优化转移即可，时间复杂度 $\mathcal{O}\dfrac{n^3}{c}$。
+	
+	取一阈值 $S$，当 $c>S$ 的时候，直接用这个做法即可；当 $c\le S$ 的时候，把当前选了哪些数也压入状态即可，这样的时间复杂度是 $\mathcal{O}(n^2\dfrac{2^c}{c})$。
+	
+	取 $S=\log n$，得最终时间复杂度为 $\mathcal{O}(n^3\log n)$。
 	
 \end{document}

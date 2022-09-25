@@ -102,13 +102,13 @@
 	
 	\newpage
 	\pagestyle{fancy}
-	\lhead{\footnotesize \songti{天路}}
+	\lhead{\footnotesize \songti{外星人}}
 	\cfoot{\footnotesize 第 \thepage \ 页\qquad  共  \pageref{LastPage} 页}
 	
 	\phantomsection
-	\addcontentsline{toc}{section}{【UER \#7】天路}
+	\addcontentsline{toc}{section}{【UR \#1】外星人}
 	\section*{【UR \#1】外星人}
-	\rhead{\footnotesize \songti{UER \#7}}
+	\rhead{\footnotesize \songti{UR \#1}}
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题目描述}
@@ -128,13 +128,15 @@
 	
 	Step \#3：第二问的问题在于不知道当前剩余的数所构成的集合。
 	
-	Step \#4：考虑当最新一次的有效的 $\bmod x$ 确定后，假设当前 $a\rightarrow b$，则可以先将 $a\sim b$ 之间的数插入后方。
+	Step \#4：考虑当最新一次的有效的 $\bmod\;x$ 确定后，假设当前 $a\rightarrow b$，则可以先将 $a\sim b$ 之间的数插入后方。
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题解}
 	\subsection*{【题解】}
 	
-	设 $f_i$ 为 $x=i$ 时最终的最大结果，$g_i$ 为此时的方案数，则 $f$ 易通过 $\text{DP}$ 得出，计算 $g_i$ 时只需从 $g_j$ 乘上一个组合数的贡献系数（表示 $j$ 与 $i$ 之间的数在剩余的位置里插入，这两个数都是好算的），时间复杂度 $\mathcal{O}(nx)$。
+	当 $x<a_i$ 时，就可以把 $a_i$ 扔进垃圾桶，所以设 $f_i$ 为 $x=i$ 时最终的最大结果，就可以对于每一个状态枚举下一个 $<i$ 的 $a_j$ 进行转移即可。
+	
+	设 $g_i$ 为此时的方案数，转移的时候 $g_{i\bmod a_j}$ 时只需从 $g_i$ 乘上一个组合数的贡献系数（将新产生的 $j$ 与 $i$ 之间的垃圾在剩余的位置里插入）即可，时间复杂度 $\mathcal{O}(nx)$。
 	
 	
 \end{document}
