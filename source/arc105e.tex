@@ -102,24 +102,44 @@
 	
 	\newpage
 	\pagestyle{fancy}
-	\lhead{\footnotesize \songti{Fourtune Cookies}}
+	\lhead{\footnotesize \songti{Keep Graph Disconnected}}
 	\cfoot{\footnotesize 第 \thepage \ 页\qquad  共  \pageref{LastPage} 页}
 	
 	\phantomsection
-	\addcontentsline{toc}{section}{【ARC105A】Fourtune Cookies}
-	\section*{【ARC105A】Fourtune Cookies}
-	\rhead{\footnotesize \songti{ARC105A}}
+	\addcontentsline{toc}{section}{【ARC105E】Keep Graph Disconnected}
+	\section*{【ARC105E】Keep Graph Disconnected}
+	\rhead{\footnotesize \songti{ARC105E}}
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题目描述}
 	\subsection*{【题目描述】}
 	
-	给定四个正整数，判断能否将其分为总和相等的两组。
+	给定一张 $n$ 个点，$m$ 条边的简单无向图，保证初始时点 $1$ 和点 $n$ 不连通，先后手轮流加边，在过程中要保证点 $1$ 和点 $n$ 不能连通且图为简单图，不能操作者负，求先后手谁有必胜策略。
+	
+	\phantomsection
+	\addcontentsline{toc}{subsection}{思路}
+	\subsection*{【思路】}
+	
+	Step \#1：假设最后点 $1$ 所在的连通块大小为 $x$，则最后点 $n$ 所在连通块大小为 $n-x$。
+	
+	Step \#2：发现此时输赢取决于 $\dfrac{n(n-1)}{2}-x(n-x)-m$ 的奇偶性。
+	
+	Step \#3：当 $n$ 为奇数时，此时此式的奇偶性确定，所以只需考虑 $n$ 为偶数时的情形。
+	
+	Step \#4：考察初始时点 $1$ 和点 $n$ 所在连通块的大小与答案之间的关系。
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题解}
 	\subsection*{【题解】}
 	
-	枚举第一组所包含的数即可，时间复杂度 $\mathcal{O}(1)$。
+	发现最后的图一定是两个完全图拼在一起构成的，所以假设最后点 $1$ 所在的连通块大小为 $x$，则输赢取决于 $\dfrac{n(n-1)}{2}-x(n-x)-m$ 的奇偶性。
+	
+	当 $n$ 为奇数时此式的奇偶性已经确定，考虑 $n$ 为偶数时的情况，此时输赢取决于 $x$ 的奇偶性。
+	
+	假设初始时点 $1$ 和点 $n$ 所在连通块的大小的奇偶性不同，那么此时除了这两个连通块以外肯定有奇数个奇连通块，先手先将一个奇连通块分配给其中一个连通块，然后每一步都“抵消”后手的操作即可。
+	
+	当初始时点 $1$ 和点 $n$ 所在连通块的大小的奇偶性相同时，先手或后手总是有一方可以保持当前的连通块大小的奇偶性不变，而双方肯定有一方会因此胜利，从而采取这种策略，所以\stress{最终}点 $1$ 所在连通块的大小的奇偶性和以\stress{初始时}点 $1$ 所在连通块的大小的奇偶性相同。
+	
+	dfs 一遍即可，时间复杂度 $\mathcal{O}(n+m)$
 	
 \end{document}
