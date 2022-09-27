@@ -102,24 +102,44 @@
 	
 	\newpage
 	\pagestyle{fancy}
-	\lhead{\footnotesize \songti{Fourtune Cookies}}
+	\lhead{\footnotesize \songti{Camels and Bridge}}
 	\cfoot{\footnotesize 第 \thepage \ 页\qquad  共  \pageref{LastPage} 页}
 	
 	\phantomsection
-	\addcontentsline{toc}{section}{【ARC105A】Fourtune Cookies}
-	\section*{【ARC105A】Fourtune Cookies}
-	\rhead{\footnotesize \songti{ARC105A}}
+	\addcontentsline{toc}{section}{【ARC105C】Camels and Bridge}
+	\section*{【ARC105C】Camels and Bridge}
+	\rhead{\footnotesize \songti{ARC105C}}
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题目描述}
 	\subsection*{【题目描述】}
 	
-	给定四个正整数，判断能否将其分为总和相等的两组。
+	有 $n$ 只骆驼和一段由 $m$ 座桥\stress{首尾相接}组成的路，每只骆驼有重量，每座桥有长度和限重，可以自由决定骆驼之间的顺序和距离，顺序和距离在行走过程中\stress{保持不变}，在任意时刻都没有桥超重时最小化队伍中第一只骆驼和最后一只骆驼之间的距离。
+	
+	$n\le8$，$m\le10^5$。
+	
+	\phantomsection
+	\addcontentsline{toc}{subsection}{思路}
+	\subsection*{【思路】}
+	
+	Step \#1：发现 $n$ 很小，所以可以枚举骆驼之间的顺序。
+	
+	Step \#2：发现对于任意两只骆驼，必须要对于所有限重小于它们之间所有骆驼的重量之和的桥，这两只骆驼之间的距离都不小于桥的长度。
+	
+	Step \#3：可以用 DP 解决这个问题，排序后转移时二分即可。
 	
 	\phantomsection
 	\addcontentsline{toc}{subsection}{题解}
 	\subsection*{【题解】}
 	
-	枚举第一组所包含的数即可，时间复杂度 $\mathcal{O}(1)$。
+	可以先枚举这些骆驼之间的顺序，现在只需要算出在给定顺序下第一只骆驼和最后一只骆驼之间的最小距离。
+	
+	我们发现，对于题目中的限制，其等同于两个两只骆驼的之间的距离至少为于所有限重小于它们之间所有骆驼的重量之和的桥的长度最大值。
+	
+	这是一个最长路模型，发现这是一个 DAG，只有编号小的点到编号大的点连边，所以使用 DP 即可。
+	
+	可以先以桥梁限重为关键字进行排序并记录长度的前缀最小值后，转移就可以二分解决了。
+	
+	时间复杂度 $\mathcal{O}(n!n^2\log m)$。
 	
 \end{document}
