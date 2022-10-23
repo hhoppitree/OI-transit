@@ -1,0 +1,12 @@
+| 场次 | $\text{A}$ | 完成情况 | $\text{B}$ | 完成情况 | $\text{C}$ | 完成情况 |
+| :-------------------------------------------------------: | :---------------------------------------------: | :-----------: | :----------------------------------------------: | :-----------: | :--------------------------------------------: | :-----------: |
+| [$\text{UOJ Easy Round \#1}$](https://uoj.ac/contest/2) | [猜数](https://uoj.ac/problem/12) | $\checkmark$ | [跳蚤 OS](https://uoj.ac/problem/13) | $\checkmark$ | [DZY Loves Graph](https://uoj.ac/problem/14) | $\checkmark$ |
+| [$\text{UOJ Easy Round \#2}$](https://uoj.ac/contest/16) | [手机的生产](https://uoj.ac/problem/113) | $\checkmark$ | [信息的交换](https://uoj.ac/problem/114) |  | [谣言的传播](https://uoj.ac/problem/115) |  |
+| [$\text{UOJ Easy Round \#3}$](https://uoj.ac/contest/19) | [开学前的作文](https://uoj.ac/problem/136) | $\checkmark$ | [开学前的日历](https://uoj.ac/problem/137) | $\checkmark$ | [开学前的涂鸦](https://uoj.ac/problem/138) |  |
+| [$\text{UOJ Easy Round \#4}$](https://uoj.ac/contest/20) | [被删除的黑白树](https://uoj.ac/problem/139) | $\checkmark$ | [被粉碎的数字](https://uoj.ac/problem/140) | $\checkmark$ | [量子态的棋盘](https://uoj.ac/problem/141) |  |
+| [$\text{UOJ Easy Round \#5}$](https://uoj.ac/contest/21) | [万圣节的南瓜灯](https://uoj.ac/problem/142) | $\checkmark$ | [万圣节的数列](https://uoj.ac/problem/143) | $\checkmark$ | [万圣节的糖果](https://uoj.ac/problem/144) |  |
+| [$\text{UOJ Easy Round \#6}$](https://uoj.ac/contest/29) | [票数统计](https://uoj.ac/problem/209) | $\checkmark$ | [寻找罪犯](https://uoj.ac/problem/210) | $\checkmark$ | [逃跑](https://uoj.ac/problem/211) | $\texttt{L }$ |
+| [$\text{UOJ Easy Round \#7}$](https://uoj.ac/contest/35) | [短路](https://uoj.ac/problem/244) | $\checkmark$ | [天路](https://uoj.ac/problem/245) | $\checkmark$ | [套路](https://uoj.ac/problem/246) | $\checkmark$ |
+| [$\text{UOJ Easy Round \#8}$](https://uoj.ac/contest/47) | [打雪仗](https://uoj.ac/problem/454) | $\checkmark$ | [雪灾与外卖](https://uoj.ac/problem/455) |  | [许愿树和圣诞树](https://uoj.ac/problem/456) |  |
+| [$\text{UOJ Easy Round \#9}$](https://uoj.ac/contest/61) | [赶路](https://uoj.ac/problem/604) | $\checkmark$ | [知识网络](https://uoj.ac/problem/605) |  | [面试](https://uoj.ac/problem/606) |  |
+| [$\text{UOJ Easy Round \#10}$](https://uoj.ac/contest/75) | [随机薅羊毛](https://uoj.ac/problem/706) | $\checkmark$ | [重构元宇宙](https://uoj.ac/problem/707) |  | [磁球与磁棍](https://uoj.ac/problem/708) |  |
